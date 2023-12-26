@@ -6,13 +6,18 @@ using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
-using MongoDB.Driver;
+using MongoDB.Driver;   
+using MongoDB.Bson;
+
+using MongoDB.Bson.Serialization.Attributes;
 
 
 namespace SimpleBankingSystem
 {
     public class Customer
     {
+        [BsonIgnoreIfDefault]
+        public ObjectId Id { get; set; }
         public string FullName { get; set; }
         public string City { get; set; }
         public int Pin { get; set; }
@@ -113,17 +118,19 @@ namespace SimpleBankingSystem
                     Console.WriteLine("--------- Please enter your Access Pin --------");
                     int accessPin = int.Parse(Console.ReadLine());
 
-            Customer existingCustomer = custm.Find(c => c.Pin == accessPin).FirstOrDefault();
+                    var test = Builders<Customer>.Filter.Eq("Pin", accessPin);
+
+            Customer existingCustomer = custm.Find(test).FirstOrDefault();
 
             if (existingCustomer != null)
-                    {
-                        existingCustomer.InfoMenu();
-                    }
-                    else
-                    {
-                        Console.WriteLine("invalid Pin");
+            {
+                existingCustomer.InfoMenu();
+            }
+            else
+            {
+                Console.WriteLine("invalid Pin");
                         WelcomeMenu();
-                    }
+            }
 
 
 
