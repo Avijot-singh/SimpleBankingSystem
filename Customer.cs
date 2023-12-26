@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
+using MongoDB.Driver;
+
 
 namespace SimpleBankingSystem
 {
@@ -27,6 +30,17 @@ namespace SimpleBankingSystem
             Pin = int.Parse(Console.ReadLine());
         }
 
+        public void InfoMenu()
+        {
+            Console.WriteLine("Menu");
+            Console.WriteLine("------------------------");
+
+            Console.WriteLine("Please select from one of the following options:");
+            Console.WriteLine("1.   Check Balance");
+            Console.WriteLine("2.   Deposit");
+            Console.WriteLine("3.   Withdraw");
+        }
+
         
 
     }
@@ -35,7 +49,15 @@ namespace SimpleBankingSystem
 
     public class Bank
     {
-        private List<Customer> customers = new List<Customer>();
+        private static IMongoCollection<Customer> custm;
+
+        static Bank()
+        {
+            var client = new MongoClient("mongodb://localhost:27017");
+            var database = client.GetDatabase("ATM");
+            custm = database.GetCollection<Customer>("Customers");
+        }
+        
 
         public void WelcomeMenu()
         {
@@ -46,39 +68,6 @@ namespace SimpleBankingSystem
             Console.WriteLine("1.   New User");
             Console.WriteLine("2.   Existing User");
 
-            string WelcomeResponse = Console.ReadLine();
-
-            if (int.TryParse(WelcomeResponse, out int WR))
-            {
-
-
-
-                if (WR == 1)
-                {
-                    Console.WriteLine("You have selected New User");
-                    Customer NewCustomer = new Customer();
-                    NewCustomer.Registration();
-                }
-            }
-
-
-        }
-
-         
-        public void AddCustomers(Customer customer)
-        {
-            customers.Add(customer);
-
-        }
-        public void OGMenu()
-        {
-            Console.WriteLine("Menu");
-            Console.WriteLine("------------------------");
-
-            Console.WriteLine("Please select from one of the following options:");
-            Console.WriteLine("1.   Check Balance");
-            Console.WriteLine("2.   Deposit");
-            Console.WriteLine("3.   Withdraw");
 
             string WelcomeResponse = Console.ReadLine();
 
@@ -93,13 +82,67 @@ namespace SimpleBankingSystem
                     Customer NewCustomer = new Customer();
                     NewCustomer.Registration();
                     AddCustomers(NewCustomer);
+                    DisplayCustomers();
+                }
+                else if (WR == 2)
+                {
+                    ExistingUsers();
                 }
             }
+            else
+            {
+                Console.WriteLine("Invalid Input please enter valid input");
+            }
+
+
+        }
+        public void AddCustomers(Customer customer)
+        {
+            custm.InsertOne(customer);
+
+        }
+
+
+        public void ExistingUsers()
+        {
+
+
+                    Console.WriteLine("You are an existing User");
+                    Console.WriteLine("------------------------------");
+                    Console.WriteLine();
+                    Console.WriteLine("--------- Please enter your Access Pin --------");
+                    int accessPin = int.Parse(Console.ReadLine());
+
+            Customer existingCustomer = custm.Find(c => c.Pin == accessPin).FirstOrDefault();
+
+            if (existingCustomer != null)
+                    {
+                        existingCustomer.InfoMenu();
+                    }
+                    else
+                    {
+                        Console.WriteLine("invalid Pin");
+                        WelcomeMenu();
+                    }
+
 
 
 
         }
 
+        public static void DisplayCustomers()
+        {
+            var customers = custm.Find(c => true).ToList();
+            Console.WriteLine("List of Customers:");
+            foreach (var customer in customers)
+            {
+                Console.WriteLine($"Name: {customer.FullName}, City: {customer.City}, Pin: {customer.Pin}");
+            }
+        }
+        
+
 
     }
+
+    
 }
