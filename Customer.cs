@@ -44,6 +44,20 @@ namespace SimpleBankingSystem
             Console.WriteLine("1.   Check Balance");
             Console.WriteLine("2.   Deposit");
             Console.WriteLine("3.   Withdraw");
+
+            int input = int.Parse(Console.ReadLine());
+
+            if (input == 1)
+            {
+                
+
+            }
+            else if (input == 2)
+            {
+                Deposit deposit = new Deposit();
+                deposit.Depositing();
+
+            }
         }
 
         
