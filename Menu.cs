@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SimpleBankingSystem
 {
-    public class Deposit
+    public class Menu
     {
         public int DepositedAmount { get; set; }
         public int Balance { get; set; }
@@ -33,7 +33,15 @@ namespace SimpleBankingSystem
 
         }
 
+        public void ViewBalance()
+        {
+            Console.WriteLine("---------BALANCE---------");
+            Console.WriteLine($"your total balance is {Balance}");
+        }
 
+        
 
     }
+
+   
 }
