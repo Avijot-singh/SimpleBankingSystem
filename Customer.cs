@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
@@ -21,8 +22,9 @@ namespace SimpleBankingSystem
         public string FullName { get; set; }
         public string City { get; set; }
         public int Pin { get; set; }
+        public int Balance { get; set; }
 
-
+        Menu menu = new Menu();
         public void Registration()
         {
             Console.WriteLine("Registration Page");
@@ -33,6 +35,9 @@ namespace SimpleBankingSystem
             City = Console.ReadLine();
             Console.WriteLine("Please enter your access pin");
             Pin = int.Parse(Console.ReadLine());
+            Balance = 0;
+
+            Console.WriteLine($"Welcome, {FullName}! Your current balance is: {Balance}");
         }
 
         public void InfoMenu()
@@ -47,15 +52,24 @@ namespace SimpleBankingSystem
 
             int input = int.Parse(Console.ReadLine());
 
-            if (input == 1)
+            switch (input)
             {
-                
+                case 1:
+                    menu.ViewBalance();
+                    break;
+                case 2:
+                    menu.Depositing();
+                    break;
+                case 3:
+                    menu.withdraw();
+                    break;
+                default:
+                    Console.WriteLine("Invalid input");
+                    break;
+                    
 
-            }
-            else if (input == 2)
-            {
-                Deposit deposit = new Deposit();
-                deposit.Depositing();
+
+
 
             }
         }
@@ -100,6 +114,7 @@ namespace SimpleBankingSystem
                     Console.WriteLine("You have selected New User");
                     Customer NewCustomer = new Customer();
                     NewCustomer.Registration();
+                    NewCustomer.Balance = 0;
                     AddCustomers(NewCustomer);
                     DisplayCustomers();
                 }
